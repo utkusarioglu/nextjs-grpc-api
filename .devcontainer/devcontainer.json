@@ -1,0 +1,17 @@
+{
+  "name": "api.nextjs-grpc.workshops.utkusarioglu.com",
+  "dockerComposeFile": [
+    "../.docker/docker-compose.dev.yml",
+    "docker-compose.devcontainer.yml"
+  ],
+  "service": "api",
+  "workspaceFolder": "/utkusarioglu/workshops/nextjs-grpc/api",
+  "settings": {
+    "workbench.colorCustomizations": {
+      "activityBar.background": "#770000"
+    }
+  },
+  "features": {
+    "github-cli": "latest"
+  }
+}
