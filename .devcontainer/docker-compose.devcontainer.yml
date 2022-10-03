@@ -5,8 +5,18 @@ services:
       - vscode-extensions:/root/.vscode-server/extensions
       - vscode-extensions-insiders:/root/.vscode-server-insiders/extensions
       - ~/.config/gh:/home/node/.config/gh:ro
+      - ~/.config/helm:/home/node/.config/helm
+      - ~/.kube:/home/node/.kube
+    ports:
+      - 3000:3000
     command: /bin/sh -c "while sleep 1000; do :; done"
+    networks:
+      - nextjs_grpc
 
 volumes:
   vscode-extensions:
   vscode-extensions-insiders:
+
+networks:
+  nextjs_grpc:
+    external: true

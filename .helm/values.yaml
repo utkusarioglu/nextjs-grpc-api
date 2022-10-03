@@ -1,0 +1,173 @@
+# Default values for api.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: utkusarioglu/api-nextjsgprc-projects-utkusarioglu-com
+  pullPolicy: IfNotPresent
+  tag: tf
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/path: /metrics
+  prometheus.io/port: "9464"
+
+podSecurityContext:
+  {}
+  # fsGroup: 2000
+
+securityContext:
+  {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  # type: ClusterIP
+  type: <TF_POPULATED>
+  port: 3000
+
+resources:
+  {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector:
+  {}
+  # foo: bar
+  # hello: mello
+
+tolerations: []
+
+affinity:
+  {}
+  # nodeAffinity:
+  #   preferredDuringSchedulingIgnoredDuringExecution:
+  #     - weight: 1
+  #       preference:
+  #         matchExpressions:
+  #           - key: foo
+  #             operator: Exists
+  #           - key: hello
+  #             operator: Exists
+  # requiredDuringSchedulingIgnoredDuringExecution:
+  #   nodeSelectorTerms:
+  #     - matchExpressions:
+  #         - key: foo
+  #           operator: In
+  #           values:
+  #             - bar
+  # podAffinity:
+  #   requiredDuringSchedulingIgnoredDuringExecution:
+  #     - labelSelector:
+  #         matchExpressions:
+  #           - key: app.kubernetes.io/name
+  #             operator: In
+  #             values:
+  #               - ms
+  #       topologyKey: app.kubernetes.io/managed-by
+
+  # - weight: 1
+  #   podAffinityTerms:
+  #     - labelSelector:
+  #         matchExpressions:
+  #           - key: app.kubernetes.io/name
+  #             operator: In
+  #             values:
+  #               - ms
+  #   topologyKey: app.kubernetes.io/managed-by
+  # podAntiAffinity:
+  #   requiredDuringSchedulingIgnoredDuringExecution:
+  #     - labelSelector:
+  #         matchExpressions:
+  #           - key: app.kubernetes.io/name
+  #             operator: In
+  #             values:
+  #               - ms
+  #       topologyKey: app.kubernetes.io/managed-by
+
+env:
+  MS_HOST: ms
+  MS_PORT: 50051
+  OTEL_TRACE_HOST: otel-trace
+  OTEL_TRACE_PORT: 4317
+  GRPC_VERBOSITY: DEBUG
+  GRPC_TRACE: all
+  # This should be in config
+  CERTS_PATH: /utkusarioglu/projects/nextjs-grpc/api/.certs
+  MS_GRPC_CLIENT_CERT_FOR_API_SUBPATH: ms-grpc-client-cert-for-api
+  API_SERVER_CERT_SUBPATH: api-server-cert
+  NEXT_PUBLIC_DOMAIN_NAME: <TF_POPULATED>
+  SCHEME: <TF_POPULATED>
+
+cloudProvider:
+  isLocal: false
+  isAws: false
+
+certs:
+  msGrpcClient: ms-grpc-client-cert-for-api
+  apiServerCert: api-server-cert
+
+ingress:
+  enabled: true
+
+  annotations:
+    nginx.ingress.kubernetes.io/enable-opentracing: "true"
+    nginx.ingress.kubernetes.io/opentracing-trust-incoming-span: "true"
+    kubernetes.io/tls-acme: "true"
+    kubernetes.io/ingress.class: <TF_POPULATED>
+
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80},{"HTTPS":443}]'
+    alb.ingress.kubernetes.io/ssl-redirect: "443"
+    external-dns.alpha.kubernetes.io/alias: "true"
+
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/group.name: nextjs-grpc
+    alb.ingress.kubernetes.io/load-balancer-name: nextjs-grpc
+    alb.ingress.kubernetes.io/security-groups: <TF_POPULATED>
+    external-dns.alpha.kubernetes.io/hostname: <TF_POPULATED>
+
+  hosts:
+    - host: <TF_POPULATED>
+      paths:
+        - path: <TF_POPULATED>
+          pathType: <TF_POPULATED>
+
+  # tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local

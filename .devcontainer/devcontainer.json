@@ -1,17 +1,27 @@
 {
-  "name": "api.nextjs-grpc.workshops.utkusarioglu.com",
+  "name": "api.nextjs-grpc.projects.utkusarioglu.com",
   "dockerComposeFile": [
     "../.docker/docker-compose.dev.yml",
     "docker-compose.devcontainer.yml"
   ],
   "service": "api",
-  "workspaceFolder": "/utkusarioglu/workshops/nextjs-grpc/api",
+  "workspaceFolder": "/utkusarioglu/projects/nextjs-grpc/api",
   "settings": {
     "workbench.colorCustomizations": {
       "activityBar.background": "#770000"
     }
   },
+  "extensions": [
+    "hashicorp.terraform"
+  ],
   "features": {
-    "github-cli": "latest"
-  }
+    "github-cli": "latest",
+    "kubectl-helm-minikube": {
+      "kubectl": "latest",
+      "helm": "latest",
+      "minikube": "none"
+    }
+  },
+  "initializeCommand": "scripts/initialize-command.sh",
+  "postAttachCommand": "scripts/post-attach-command.sh"
 }

@@ -1,8 +1,25 @@
 version: "3.9"
 services:
   api:
-    build:
-      context: ..
-      dockerfile: .docker/Dockerfile.dev
+    image: utkusarioglu/node-devcontainer:17-slim.0.0
     volumes:
-      - ..:/utkusarioglu/workshops/nextjs-grpc/api
+      - type: bind
+        source: ..
+        target: /utkusarioglu/projects/nextjs-grpc/api
+        read_only: false
+      - type: bind
+        source: ../../proto
+        target: /utkusarioglu/projects/nextjs-grpc/proto
+        read_only: true
+      - type: bind
+        source: ../../secrets/secrets/tls/root/certs/root.crt
+        target: /utkusarioglu/projects/nextjs-grpc/api/.certs/root/root.crt
+        read_only: true
+        volume:
+          nocopy: true
+      - type: bind
+        source: ../../secrets/secrets/tls/root/private/root.key
+        target: /utkusarioglu/projects/nextjs-grpc/api/.certs/root/root.key
+        read_only: true
+        volume:
+          nocopy: true

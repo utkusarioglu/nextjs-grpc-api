@@ -1,0 +1,11 @@
+{
+  "emeraldwalk.runonsave": {
+    "commands": [
+      {
+        "match": ".env*",
+        "isAsync": true,
+        "cmd": "/scripts/create-env-example.sh"
+      }
+    ]
+  },
+}
