@@ -14,14 +14,6 @@
   "extensions": [
     "hashicorp.terraform"
   ],
-  "features": {
-    "github-cli": "latest",
-    "kubectl-helm-minikube": {
-      "kubectl": "latest",
-      "helm": "latest",
-      "minikube": "none"
-    }
-  },
   "initializeCommand": "scripts/initialize-command.sh",
   "postAttachCommand": "scripts/post-attach-command.sh"
 }
