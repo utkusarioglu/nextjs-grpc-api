@@ -6,6 +6,25 @@ import styles from "../styles/index.module.css";
 import getConfig from "next/config";
 import { Header } from "../components/Header";
 
+const LINKS = [
+  {
+    title: "Grafana",
+    subdomain: "grafana",
+  },
+  {
+    title: "Jaeger",
+    subdomain: "jaeger",
+  },
+  {
+    title: "Prometheus",
+    subdomain: "prometheus",
+  },
+  {
+    title: "Vault",
+    subdomain: "vault",
+  },
+];
+
 export function getServerSideProps() {
   try {
     const allPostsData = getSortedPostsData();
@@ -15,24 +34,11 @@ export function getServerSideProps() {
     return {
       props: {
         allPostsData,
-        links: [
-          {
-            title: "Grafana", 
-            subdomain: "grafana"
-          }, 
-          {
-            title: "Jaeger", 
-            subdomain: "jaeger"
-          }, 
-          {
-            title: "Prometheus", 
-            subdomain: "prometheus"
-          }
-        ].map(({title, subdomain}) => ({
-          title, 
-          subdomain, 
-          href: `${scheme}://${subdomain}.${domainName}`
-        }))
+        links: LINKS.map(({ title, subdomain }) => ({
+          title,
+          subdomain,
+          href: `${scheme}://${subdomain}.${domainName}`,
+        })),
       },
     };
   } catch (e) {
