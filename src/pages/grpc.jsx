@@ -4,7 +4,7 @@ import Layout from "../components/layout";
 export async function getServerSideProps() {
   try {
     const grpc = new GreetingUtil();
-    const greeting = await grpc.sendGreeting({
+    const countryData = await grpc.sendGreeting({
       name: "utku",
       age: 3,
       job: 0,
@@ -12,26 +12,55 @@ export async function getServerSideProps() {
     });
     return {
       props: {
-        greeting,
+        countryData: JSON.parse(countryData),
       },
     };
   } catch (e) {
     console.log(e);
     return {
       props: {
-        greeting: "error",
+        countryData: "error",
       },
     };
   }
 }
 
-const Grpc = ({ greeting }) => {
+const Grpc = ({ countryData }) => {
+  if (countryData === "error") {
+    return <span>Something went wrong:(</span>;
+  }
+
+  if (!countryData.length) {
+    return <span>There is nothing here...</span>;
+  }
+
   return (
     <Layout>
       <div>greeting:</div>
-      {greeting}
+      {countryData.map((details) => (
+        <div style={styles.card}>
+          {Object.entries(details).map(([key, value]) => (
+            <span style={styles.key}>
+              {key}: {value}
+            </span>
+          ))}
+        </div>
+      ))}
     </Layout>
   );
+};
+
+const styles = {
+  key: {
+    display: "block",
+  },
+  card: {
+    backgroundColor: "#666",
+    color: "#FFF",
+    padding: "1em",
+    marginBottom: "1em",
+    borderRadius: "1em",
+  },
 };
 
 export default Grpc;

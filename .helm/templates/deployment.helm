@@ -56,22 +56,30 @@ spec:
               value: {{ $v | quote }}
             {{- end }}
           volumeMounts:
-            - name: {{ .Values.certs.msGrpcClient }}
+            {{ with .Values.env -}}
+            {{- if eq .RUN_MODE "development" -}}
+            - name: source-code
+              mountPath: {{ .PROJECT_ROOT_PATH }}
+            {{- end }}
+            - name: {{ $.Values.certSecretNames.msGrpcClient }}
               mountPath: {{ 
-                printf "%s/%s" 
-                .Values.env.CERTS_PATH 
-                .Values.env.MS_GRPC_CLIENT_CERT_FOR_API_SUBPATH 
-                | quote 
+                include "api.singleCertPath" (
+                  dict 
+                    "global" $ 
+                    "subpath" .MS_GRPC_CLIENT_CERT_FOR_API_SUBPATH
+                ) | quote 
               }}
               readOnly: true
-            - name: {{ .Values.certs.apiServerCert }}
+            - name: {{ $.Values.certSecretNames.apiServerCert }}
               mountPath: {{ 
-                printf "%s/%s" 
-                .Values.env.CERTS_PATH 
-                .Values.env.API_SERVER_CERT_SUBPATH 
-                | quote 
+                include "api.singleCertPath" (
+                  dict 
+                    "global" $ 
+                    "subpath" .API_SERVER_CERT_SUBPATH
+                ) | quote 
               }}
               readOnly: true
+            {{- end -}}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -86,11 +94,16 @@ spec:
       {{- end }}
 
       volumes:
-        - name: {{ .Values.certs.msGrpcClient }}
+        {{ if eq .Values.env.RUN_MODE "development" -}}
+        - name: source-code
+          persistentVolumeClaim:
+            claimName: source-code-api-pvc
+        {{- end }}
+        - name: {{ .Values.certSecretNames.msGrpcClient | quote }}
           secret:
-            secretName: {{ .Values.certs.msGrpcClient }}
-        - name: {{ .Values.certs.apiServerCert }}
+            secretName: {{ .Values.certSecretNames.msGrpcClient | quote }}
+        - name: {{ .Values.certSecretNames.apiServerCert | quote }}
           secret:
-            secretName: {{ .Values.certs.apiServerCert }}
+            secretName: {{ .Values.certSecretNames.apiServerCert | quote }}
 
           

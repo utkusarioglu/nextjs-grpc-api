@@ -7,7 +7,6 @@ replicaCount: 1
 image:
   repository: utkusarioglu/api-nextjsgprc-projects-utkusarioglu-com
   pullPolicy: IfNotPresent
-  tag: tf
 
 imagePullSecrets: []
 nameOverride: ""
@@ -28,20 +27,20 @@ podAnnotations:
   prometheus.io/port: "9464"
 
 podSecurityContext:
-  {}
-  # fsGroup: 2000
+  runAsUser: 1000
+  runAsGroup: 1000
+  fsGroup: 1000
+  fsGroupChangePolicy: "OnRootMismatch" 
 
 securityContext:
-  {}
   # capabilities:
   #   drop:
   #   - ALL
   # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
-  # runAsUser: 1000
+  runAsNonRoot: true
+  runAsUser: 1000
 
 service:
-  # type: ClusterIP
   type: <TF_POPULATED>
   port: 3000
 
@@ -120,14 +119,18 @@ affinity:
   #       topologyKey: app.kubernetes.io/managed-by
 
 env:
-  MS_HOST: ms
+  # RUN_MODE: development
+  RUN_MODE: production
+  PROJECT_ROOT_PATH: /utkusarioglu-com/projects/nextjs-grpc
+  MS_HOST: ms.ms
   MS_PORT: 50051
-  OTEL_TRACE_HOST: otel-trace
+  OTEL_TRACE_HOST: otel-trace-collector.observability
   OTEL_TRACE_PORT: 4317
   GRPC_VERBOSITY: DEBUG
   GRPC_TRACE: all
   # This should be in config
-  CERTS_PATH: /utkusarioglu/projects/nextjs-grpc/api/.certs
+  REPO_SUBPATH: api
+  CERTS_PATH: /.certs
   MS_GRPC_CLIENT_CERT_FOR_API_SUBPATH: ms-grpc-client-cert-for-api
   API_SERVER_CERT_SUBPATH: api-server-cert
   NEXT_PUBLIC_DOMAIN_NAME: <TF_POPULATED>
@@ -137,7 +140,7 @@ cloudProvider:
   isLocal: false
   isAws: false
 
-certs:
+certSecretNames:
   msGrpcClient: ms-grpc-client-cert-for-api
   apiServerCert: api-server-cert
 
@@ -145,8 +148,10 @@ ingress:
   enabled: true
 
   annotations:
-    nginx.ingress.kubernetes.io/enable-opentracing: "true"
-    nginx.ingress.kubernetes.io/opentracing-trust-incoming-span: "true"
+    nginx.ingress.kubernetes.io/enable-opentelemetry: "true"
+    nginx.ingress.kubernetes.io/opentelemetry-trust-incoming-span: "true"
+    # nginx.ingress.kubernetes.io/enable-opentracing: "true"
+    # nginx.ingress.kubernetes.io/opentracing-trust-incoming-span: "true"
     kubernetes.io/tls-acme: "true"
     kubernetes.io/ingress.class: <TF_POPULATED>
 
@@ -167,6 +172,7 @@ ingress:
         - path: <TF_POPULATED>
           pathType: <TF_POPULATED>
 
+            
   # tls: []
   #  - secretName: chart-example-tls
   #    hosts:

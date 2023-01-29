@@ -7,16 +7,19 @@ services:
       - ~/.config/gh:/home/node/.config/gh:ro
       - ~/.config/helm:/home/node/.config/helm
       - ~/.kube:/home/node/.kube
-    ports:
-      - 3000:3000
+    # ports:
+    #   - 3000:3000
     command: /bin/sh -c "while sleep 1000; do :; done"
     networks:
-      - nextjs_grpc
+      - gefyra
+      # - nextjs_grpc
 
 volumes:
   vscode-extensions:
   vscode-extensions-insiders:
 
 networks:
-  nextjs_grpc:
+  gefyra:
     external: true
+#   nextjs_grpc:
+#     external: true

@@ -23,6 +23,10 @@ const LINKS = [
     title: "Vault",
     subdomain: "vault",
   },
+  {
+    title: "Kubernetes Dashboard",
+    subdomain: "kubernetes-dashboard",
+  },
 ];
 
 export function getServerSideProps() {

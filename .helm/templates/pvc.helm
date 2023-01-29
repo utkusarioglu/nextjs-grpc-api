@@ -1,0 +1,14 @@
+{{- if eq .Values.env.RUN_MODE "development" -}}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: source-code-api-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  volumeMode: Filesystem
+  storageClassName: source-code-sc
+  resources:
+    requests:
+      storage: 10Gi
+{{ end }}

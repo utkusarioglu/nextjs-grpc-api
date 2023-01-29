@@ -1,21 +1,16 @@
 require("dotenv").config();
-const process = require("process");
-const { diag, DiagConsoleLogger, DiagLogLevel } = require("@opentelemetry/api");
-const { Metadata, credentials } = require("@grpc/grpc-js");
-const opentelemetry = require("@opentelemetry/sdk-node");
-const {
-  getNodeAutoInstrumentations,
-} = require("@opentelemetry/auto-instrumentations-node");
-const { Resource } = require("@opentelemetry/resources");
-const {
-  SemanticResourceAttributes,
-} = require("@opentelemetry/semantic-conventions");
-const {
-  OTLPTraceExporter,
-} = require("@opentelemetry/exporter-trace-otlp-grpc");
-const { MeterProvider } = require("@opentelemetry/sdk-metrics-base");
-const { HostMetrics } = require("@opentelemetry/host-metrics");
-const { PrometheusExporter } = require("@opentelemetry/exporter-prometheus");
+import process from "process";
+import { diag, DiagConsoleLogger, DiagLogLevel } from "@opentelemetry/api";
+import { Metadata, credentials } from "@grpc/grpc-js";
+import { NodeSDK } from "@opentelemetry/sdk-node";
+import { getNodeAutoInstrumentations } from "@opentelemetry/auto-instrumentations-node";
+import { Resource } from "@opentelemetry/resources";
+import { SemanticResourceAttributes } from "@opentelemetry/semantic-conventions";
+import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-grpc";
+import { MeterProvider } from "@opentelemetry/sdk-metrics-base";
+import { HostMetrics } from "@opentelemetry/host-metrics";
+import { PrometheusExporter } from "@opentelemetry/exporter-prometheus";
+import { startServer } from "./server";
 
 const instrumentations = [
   getNodeAutoInstrumentations({
@@ -39,18 +34,23 @@ const instrumentations = [
       // This gives your request spans a more meaningful name
       // than `HTTP GET`
       requestHook: (span, request) => {
+        let detail = "-";
+        if ("url" in request) {
+          detail = request.url || "- (url)";
+        } else if ("path" in request) {
+          detail = request.path || "- (path)";
+        }
         span.setAttributes({
-          name: `${request.method} ${request.url || request.path}`,
+          name: `${request.method} ${detail}`,
         });
       },
 
       // Re-assign the root span's attributes
       startIncomingSpanHook: (request) => {
-        console.log("request.headers:\n", request.headers);
         return {
-          name: `${request.method} ${request.url || request.path}`,
-          "request.path": request.url || request.path,
-          "uber-trace-id": request["uber-trace-id"],
+          name: `${request.method} ${request.url}`,
+          "request.path": request.url,
+          // "uber-trace-id": request["uber-trace-id"],
         };
       },
     },
@@ -61,7 +61,7 @@ const prometheusPort = 9464;
 const serviceName = "nextjs-grpc-api";
 const serviceNamespace = "api";
 const metadata = new Metadata();
-const traceUrl = `grpc://${process.env.OTEL_TRACE_HOST}:${process.env.OTEL_TRACE_PORT}`;
+const traceUrl = `http://${process.env.OTEL_TRACE_HOST}:${process.env.OTEL_TRACE_PORT}`;
 console.log(`Trace url: ${traceUrl}`);
 // metadata.set("x-honeycomb-team", "<YOUR HONEYCOMB API KEY>");
 // metadata.set("x-honeycomb-dataset", "<NAME OF YOUR TARGET HONEYCOMB DATA SET>");
@@ -73,30 +73,33 @@ const traceExporter = new OTLPTraceExporter({
   metadata,
 });
 
-const metricExporter = new PrometheusExporter(
-  { port: prometheusPort, startServer: true },
+const prometheusExporter = new PrometheusExporter(
+  { port: prometheusPort },
   () =>
     console.log(`metrics @ ${process.env.HOSTNAME}:${prometheusPort}/metrics`)
 );
 const meterProvider = new MeterProvider({
-  exporter: metricExporter,
-  interval: 1000,
+  // exporter: metricExporter,
+  // interval: 1000,
 });
+
 // this is probably temporary, without this prometheus metrics don't work
 // and this command is not given in any of the documentation.
-meterProvider.addMetricReader(metricExporter);
-
+// @ts-ignore
+// meterProvider.addMetricReader(prometheusExporter);
+// @ts-ignore
 const hostMetrics = new HostMetrics({ meterProvider, name: serviceName });
 hostMetrics.start();
 
 // configure the SDK to export telemetry data to the console
 // enable all auto-instrumentations from the meta package
-const sdk = new opentelemetry.NodeSDK({
+const sdk = new NodeSDK({
+  // @ts-ignore
   resource: new Resource({
     [SemanticResourceAttributes.SERVICE_NAME]: serviceName,
     [SemanticResourceAttributes.SERVICE_NAMESPACE]: serviceNamespace,
   }),
-  metricExporter,
+  metricReader: prometheusExporter,
   traceExporter,
   instrumentations,
 });
@@ -108,12 +111,12 @@ sdk
     const counter = meter.createCounter("api_counter_random", {
       description: "some test value",
     });
-    setInterval(() => { 
+    setInterval(() => {
       counter.add(Math.floor(Math.random() * 10));
-    }, 2000)
+    }, 2000);
     console.log(`Tracing initialized with the target url: ${traceUrl}`);
   })
-  // .then(() => startServer())
+  .then(() => startServer())
   .catch((error) =>
     console.log("Error initializing tracing and starting server", error)
   );
