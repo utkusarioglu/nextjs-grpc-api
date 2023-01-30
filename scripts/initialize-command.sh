@@ -1,3 +1,3 @@
 #!/bin/bash
 
-docker network create nextjs_grpc || true
+docker network create gefyra || true

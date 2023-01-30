@@ -12,6 +12,24 @@ import { HostMetrics } from "@opentelemetry/host-metrics";
 import { PrometheusExporter } from "@opentelemetry/exporter-prometheus";
 import { startServer } from "./server";
 
+const {
+  COLLECT_METRICS,
+  COLLECT_TRACES,
+  NODE_ENV,
+  OTEL_TRACE_HOST,
+  OTEL_TRACE_PORT,
+  PROMETHEUS_PORT,
+  HOSTNAME,
+} = process.env;
+
+function isEnvEnabled(envVar: string | undefined): boolean {
+  const disabledPhrases = ["FALSE", "0", "DISABLED"];
+  return !envVar ? true : !disabledPhrases.includes(envVar.toUpperCase());
+}
+
+const collectMetrics = isEnvEnabled(COLLECT_METRICS);
+const collectTraces = isEnvEnabled(COLLECT_TRACES);
+
 const instrumentations = [
   getNodeAutoInstrumentations({
     // Each of the auto-instrumentations
@@ -26,9 +44,7 @@ const instrumentations = [
         // You can filter conditionally
         // Next.js gets a little too chatty
         // if you trace all the incoming requests
-        ...(process.env.NODE_ENV !== "production"
-          ? [/^\/_next\/static.*/]
-          : []),
+        ...(NODE_ENV !== "production" ? [/^\/_next\/static.*/] : []),
       ],
 
       // This gives your request spans a more meaningful name
@@ -57,11 +73,11 @@ const instrumentations = [
   }),
 ];
 
-const prometheusPort = 9464;
+const prometheusPort = +(PROMETHEUS_PORT || 9464);
 const serviceName = "nextjs-grpc-api";
 const serviceNamespace = "api";
 const metadata = new Metadata();
-const traceUrl = `http://${process.env.OTEL_TRACE_HOST}:${process.env.OTEL_TRACE_PORT}`;
+const traceUrl = `http://${OTEL_TRACE_HOST}:${OTEL_TRACE_PORT}`;
 console.log(`Trace url: ${traceUrl}`);
 // metadata.set("x-honeycomb-team", "<YOUR HONEYCOMB API KEY>");
 // metadata.set("x-honeycomb-dataset", "<NAME OF YOUR TARGET HONEYCOMB DATA SET>");
@@ -75,8 +91,7 @@ const traceExporter = new OTLPTraceExporter({
 
 const prometheusExporter = new PrometheusExporter(
   { port: prometheusPort },
-  () =>
-    console.log(`metrics @ ${process.env.HOSTNAME}:${prometheusPort}/metrics`)
+  () => console.log(`metrics @ ${HOSTNAME}:${prometheusPort}/metrics`)
 );
 const meterProvider = new MeterProvider({
   // exporter: metricExporter,
@@ -99,8 +114,8 @@ const sdk = new NodeSDK({
     [SemanticResourceAttributes.SERVICE_NAME]: serviceName,
     [SemanticResourceAttributes.SERVICE_NAMESPACE]: serviceNamespace,
   }),
-  metricReader: prometheusExporter,
-  traceExporter,
+  metricReader: collectMetrics ? prometheusExporter : undefined,
+  traceExporter: collectTraces ? traceExporter : undefined,
   instrumentations,
 });
 

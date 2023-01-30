@@ -7,9 +7,11 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "dev": "ts-node-dev src/tracing.ts",
-    "build:tracing": "tsc --project tsconfig.server.json",
-    "build": "next build && yarn build:tracing",
+    "dev": "ts-node-dev src/telemetry.ts",
+    "dev:no-telemetry": "ts-node-dev src/no-telemetry.ts",
+    "build:telemetry": "tsc --project tsconfig.server.json",
+    "build:next-js": "next build",
+    "build": "yarn build:next-js && yarn build:telemetry",
     "start": "NODE_ENV=production node dist/tracing.js",
     "debug": "echo this is broken now => node --inspect -r ./src/tracing.js ./node_modules/.bin/next dev"
   },
