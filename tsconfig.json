@@ -17,7 +17,12 @@
     "resolveJsonModule": true,
     "jsx": "preserve",
     "incremental": false,
-    "isolatedModules": true
+    "isolatedModules": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
   },
   "ts-node": {
     "compilerOptions": {
@@ -29,7 +34,8 @@
   "include": [
     "next-env.d.ts",
     "**/*.ts",
-    "**/*.tsx"
+    "**/*.tsx",
+    "dist/types/**/*.ts"
   ],
   "exclude": [
     "node_modules"
