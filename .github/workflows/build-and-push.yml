@@ -1,0 +1,151 @@
+name: build-and-push
+
+on:
+  push:
+    tags:
+      - "**.**"
+      - "experiment/**/**/**"
+    paths:
+      - src/**
+      - .github/workflows/build-and-push.yml
+  workflow_dispatch:
+
+env:
+  CONTAINER_NAME: api-nextjsgprc-projects-utkusarioglu-com
+  CONTAINER_USERNAME: 10021
+  CONTAINER_GROUP: 10021
+  CACHE_TO_DEST: /tmp/.buildx-cache-new
+  CACHE_FROM_SRC: /tmp/.buildx-cache
+  TAG_FALLBACK_STRING: tag-unavailable
+
+jobs:
+  build-and-push:
+    name: build-and-push
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        images:
+          - imageTagPrefix: ""
+            repoRelPath: api
+            dockerfile: .docker/Dockerfile.dev
+            additionalFilesToWatch: ""
+            readmeFile: .docker/DOCKER_README.md
+
+    steps:
+      - name: Checkout ${{ matrix.images.repoRelPath }}
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+          path: ${{ matrix.images.repoRelPath }} 
+
+      - name: Checkout proto
+        uses: actions/checkout@v3
+        with:
+          repository: utkusarioglu/nextjs-grpc-proto
+          fetch-depth: 2
+          path: proto 
+
+      - name: Get changed files
+        id: changed_files
+        uses: tj-actions/changed-files@v25
+        with:
+          path: ${{ matrix.images.repoRelPath }} 
+          files: |
+            ${{ matrix.images.dockerfile }}
+            ${{ matrix.images.readmeFile }}
+            ${{ matrix.images.additionalFilesToWatch }}
+            .github/workflows/build-and-push.yml
+
+      - name: Declare run state
+        id: run_state
+        run: |
+          if [ ${{ github.ref_type }} == tag ] && ( \
+            [ ${{ steps.changed_files.outputs.any_modified }} == true ] || \
+            [ ${{ github.event_name }} == workflow_dispatch ] \
+          ); then
+            echo "run_docker_build=true" >> $GITHUB_OUTPUT
+            echo "::debug::Docker build will carry out as expected."
+          else
+            echo "run_docker_build=false" >> $GITHUB_OUTPUT
+            echo "Docker build is cancelled as the required conditions for a run haven't been met"
+          fi
+
+      - name: Create variables
+        id: variables
+        run: |
+          image_name=${{ secrets.DOCKERHUB_USERNAME }}/${{ env.CONTAINER_NAME }}
+          repo_tag=${{ github.ref_name }}
+          if [ ! -z "${{ matrix.images.imageTagPrefix }}" ]; then
+            image_tag_prefix="${repo_tag//\//-}."
+          fi
+          image_tag="$image_tag_prefix${repo_tag//\//-}"
+          dev_image_tag="dev-${image_tag}"
+          image_ref="${image_name}:${image_tag}"
+          short_image_ref="${{ env.CONTAINER_NAME }}:${image_tag}"
+          dev_image_ref="$image_name:$dev_image_tag"
+          short_dev_image_ref="${{ env.CONTAINER_NAME }}:$dev_image_tag"
+
+          echo "image_name=$image_name" >> $GITHUB_OUTPUT
+          echo "image_tag=$image_tag" >> $GITHUB_OUTPUT
+          echo "dev_image_tag=$dev_image_tag" >> $GITHUB_OUTPUT
+          echo "image_ref=$image_ref" >> $GITHUB_OUTPUT
+          echo "short_image_ref=$short_image_ref" >> $GITHUB_OUTPUT
+          echo "dev_image_ref=$dev_image_ref" >> $GITHUB_OUTPUT
+          echo "short_dev_image_ref=$short_dev_image_ref" >> $GITHUB_OUTPUT
+
+      - name: Set up Docker Buildx
+        if: steps.run_state.outputs.run_docker_build == 'true'
+        id: buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Login to DockerHub
+        if: steps.run_state.outputs.run_docker_build == 'true'
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build ${{ steps.variables.outputs.short_image_ref }}
+        if: steps.run_state.outputs.run_docker_build == 'true'
+        uses: docker/build-push-action@v2
+        id: docker_build
+        with:
+          context: .
+          tags: ${{ steps.variables.outputs.image_ref }}
+          file: ${{ matrix.images.repoRelPath }}/${{ matrix.images.dockerfile }} # ---
+          push: true
+          pull: false
+          cache-from: type=local,src=${{ env.CACHE_FROM_SRC }}
+          cache-to: type=local,mode=max,dest=${{ env.CACHE_TO_DEST }}
+          build-args: |
+            IMAGE_TAG=${{ steps.variables.outputs.image_tag }}
+            ROOT_PASS=${{ secrets.DOCKER_IMAGE_ROOT_PASS }}
+            USERNAME=${{ env.CONTAINER_USERNAME }}
+            GROUP=${{ env.CONTAINER_GROUP }}
+
+      - name: Set Docker Hub description
+        if: steps.run_state.outputs.run_docker_build == 'true'
+        uses: peter-evans/dockerhub-description@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          repository: ${{ steps.variables.outputs.image_name }}
+          short-description: MS microservice containers for NextJS-Grpc
+          readme-filepath: ${{ matrix.images.repoRelPath }}/${{ matrix.images.readmeFile }}
+
+      - name: Move cache
+        run: |
+          rm -rf ${{ env.CACHE_FROM_SRC }}
+          if [ -d ${{ env.CACHE_FROM_SRC }} ];
+          then
+            mv ${{ env.CACHE_TO_DEST }} ${{ env.CACHE_FROM_SRC }}
+          fi
+
+      - name: Telegram notifications
+        if: always()
+        uses: utkusarioglu/telegram-notifications@main
+        with:
+          telegram_id: ${{ secrets.TELEGRAM_ID }}
+          telegram_token: ${{ secrets.TELEGRAM_TOKEN }}
+          job_status: ${{ job.status }}
+          github_context: ${{ toJson(github) }}

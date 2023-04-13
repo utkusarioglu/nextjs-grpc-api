@@ -1,13 +1,59 @@
-FROM node:19-slim
-ARG ROOT_PASS=ROOT
+# FROM node:19-slim
+# ARG ROOT_PASS=ROOT
+# RUN sh -c 'echo "root:$ROOT_PASS" | chpasswd'
+# RUN sh -c 'echo "node:$ROOT_PASS" | chpasswd'
+# RUN apt update && apt install -y vim curl sudo
+# WORKDIR  /utkusarioglu-com/projects/nextjs-grpc/api
+# COPY api /utkusarioglu-com/projects/nextjs-grpc/api
+# COPY proto /utkusarioglu-com/projects/nextjs-grpc/proto
+# WORKDIR /utkusarioglu-com/projects/nextjs-grpc/api
+# RUN chown -R 10001:10001 /utkusarioglu-com
+# RUN yarn build
+# USER node
+# ENTRYPOINT scripts/entrypoint.sh
+
+
+FROM node:19-slim AS builder
+
+ARG ROOT_PASS
+ARG USERNAME
+ARG GROUP
+ARG REPO_REL_PATH
+ARG PROJECT_ROOT='/utkusarioglu-com/projects/nextjs-grpc'
+
+WORKDIR  $PROJECT_ROOT/$REPO_REL_PATH
+COPY $REPO_REL_PATH $PROJECT_ROOT/$REPO_REL_PATH
+COPY proto $PROJECT_ROOT/proto
+RUN chown -R $CONTAINER_USERNAME:$CONTAINER_GROUP /utkusarioglu-com
+RUN yarn
+RUN yarn build
+
+FROM node:19-slim AS runner
+
+ARG ROOT_PASS
+ARG USERNAME
+ARG GROUP
+ARG REPO_REL_PATH
+ARG PROJECT_ROOT
+
 RUN sh -c 'echo "root:$ROOT_PASS" | chpasswd'
 RUN sh -c 'echo "node:$ROOT_PASS" | chpasswd'
-RUN apt update && apt install -y vim curl sudo
-WORKDIR  /utkusarioglu-com/projects/nextjs-grpc/api
-COPY api /utkusarioglu-com/projects/nextjs-grpc/api
-COPY proto /utkusarioglu-com/projects/nextjs-grpc/proto
-WORKDIR /utkusarioglu-com/projects/nextjs-grpc/api
-RUN yarn build
-RUN chown -R 10001:10001 /utkusarioglu-com
-USER node
-ENTRYPOINT scripts/entrypoint.sh
+
+RUN apt update
+
+WORKDIR  $PROJECT_ROOT/$REPO_REL_PATH
+COPY --from=builder $PROJECT_ROOT/$REPO_REL_PATH/dist dist
+COPY --from=builder $PROJECT_ROOT/$REPO_REL_PATH/scripts scripts
+COPY --from=builder $PROJECT_ROOT/$REPO_REL_PATH/package.json package.json
+COPY --from=builder $PROJECT_ROOT/$REPO_REL_PATH/yarn.lock yarn.lock
+RUN rm dist/.tsbuildinfo
+
+WORKDIR  $PROJECT_ROOT/proto
+COPY --from=builder $PROJECT_ROOT/proto/src src
+RUN rm src/defunct
+
+WORKDIR  $PROJECT_ROOT/$REPO_REL_PATH
+RUN yarn --frozen-lockfile --prod
+
+USER $USERNAME
+ENTRYPOINT scripts/start.sh

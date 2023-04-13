@@ -6,7 +6,22 @@
       "script": "dev",
       "problemMatcher": [],
       "label": "yarn dev",
-      "detail": "Start NextJS dev server"
+      "detail": "Start NextJS dev server",
+      "icon": {
+        "color": "terminal.ansiBlue",
+        "id":"play"
+      }
+    },
+    {
+      "type": "npm",
+      "script": "dev:no-telemetry",
+      "problemMatcher": [],
+      "label": "yarn dev:no-telemetry",
+      "detail": "Start NextJS dev server without telemetry",
+      "icon": {
+        "color": "terminal.ansiBlue",
+        "id":"play"
+      }
     }
   ]
 }

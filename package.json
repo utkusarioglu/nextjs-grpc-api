@@ -12,8 +12,8 @@
     "build:telemetry": "tsc --project tsconfig.server.json",
     "build:next-js": "next build",
     "build": "yarn build:next-js && yarn build:telemetry",
-    "start": "NODE_ENV=production node dist/tracing.js",
-    "debug": "echo this is broken now => node --inspect -r ./src/tracing.js ./node_modules/.bin/next dev"
+    "start": "NODE_ENV=production node dist/telemetry.js",
+    "debug": "this is broken now => node --inspect -r ./src/tracing.js ./node_modules/.bin/next dev"
   },
   "dependencies": {
     "@grpc/grpc-js": "^1.8.7",
@@ -34,12 +34,11 @@
     "@opentelemetry/semantic-conventions": "^1.9.0",
     "date-fns": "^2.29.3",
     "dotenv": "^16.0.3",
-    "gray-matter": "^4.0.3",
     "next": "^13.1.6",
+    "primeicons": "^6.0.1",
+    "primereact": "^9.2.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "remark": "^14.0.2",
-    "remark-html": "^15.0.1",
     "swr": "^2.0.3",
     "ts-node-dev": "^2.0.0"
   },
@@ -48,8 +47,10 @@
     "@types/node": "^18.11.18",
     "@types/react": "^18.0.27",
     "@types/react-dom": "^18.0.10",
+    "client-only": "^0.0.1",
     "http-server": "^14.1.1",
     "sass": "^1.57.1",
+    "server-only": "^0.0.1",
     "ts-node": "^10.9.1",
     "typescript": "^4.9.4"
   }

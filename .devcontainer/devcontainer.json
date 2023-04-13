@@ -12,7 +12,8 @@
     }
   },
   "extensions": [
-    "hashicorp.terraform"
+    "hashicorp.terraform",
+    "esbenp.prettier-vscode"
   ],
   "initializeCommand": "scripts/initialize-command.sh",
   "postAttachCommand": "scripts/post-attach-command.sh"

@@ -18,6 +18,16 @@
     "jsx": "preserve",
     "incremental": false,
     "isolatedModules": true,
+    "baseUrl": ".",
+    "paths": {
+      "_views/*": ["src/components/views/*"],
+      "_providers/*": ["src/components/providers/*"],
+      "_hooks/*": ["src/hooks/*"],
+      "_utils/*": ["src/utils/*"],
+      "_styles/*": ["src/styles/*"],
+      "_types/*": ["src/types/*"],
+      "__proto/*": ["../proto/src/*"]
+    },
     "plugins": [
       {
         "name": "next"

@@ -15,5 +15,5 @@ docker build \
   .
 
 if [ "$1" == "--push" ]; then
-  docker push $image_reference
+  docker push "$image_reference"
 fi

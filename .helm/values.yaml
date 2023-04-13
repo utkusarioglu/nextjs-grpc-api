@@ -155,10 +155,10 @@ ingress:
     kubernetes.io/tls-acme: "true"
     kubernetes.io/ingress.class: <TF_POPULATED>
 
+    external-dns.alpha.kubernetes.io/alias: "true"
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80},{"HTTPS":443}]'
     alb.ingress.kubernetes.io/ssl-redirect: "443"
-    external-dns.alpha.kubernetes.io/alias: "true"
 
     alb.ingress.kubernetes.io/target-type: ip
     alb.ingress.kubernetes.io/group.name: nextjs-grpc

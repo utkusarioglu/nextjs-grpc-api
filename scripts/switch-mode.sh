@@ -49,11 +49,7 @@ start_app() {
   fi
 }
 
-# dev_script_def="$(get_package_json_script_def $DEV_SCRIPT_NAME)"
-# prod_script_def="$(get_package_json_script_def $PROD_SCRIPT_NAME)"
 dev_script_def="/usr/local/bin/node -r ./src/tracing.js ./node_modules/.bin/next dev"
 prod_script_def="/usr/local/bin/node -r ./src/tracing.js ./node_modules/.bin/next start"
-# echo "dev: $dev_script_def"
-# echo "pro: $prod_script_def"
 
 start_app 

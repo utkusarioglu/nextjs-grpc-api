@@ -1,7 +1,7 @@
 version: "3.9"
 services:
   api:
-    image: utkusarioglu/node-devcontainer:17-slim.0.3
+    image: utkusarioglu/node-devcontainer:19-slim.0.5
     environment:
       RUN_MODE: development
     volumes:
