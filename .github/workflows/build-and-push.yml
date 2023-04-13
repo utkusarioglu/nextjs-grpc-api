@@ -17,6 +17,7 @@ env:
   CACHE_TO_DEST: /tmp/.buildx-cache-new
   CACHE_FROM_SRC: /tmp/.buildx-cache
   TAG_FALLBACK_STRING: tag-unavailable
+  CONTAINER_PROJECT_ROOT: /utkusarioglu-com/projects/nextjs-grpc
 
 jobs:
   build-and-push:
@@ -123,6 +124,7 @@ jobs:
             ROOT_PASS=${{ secrets.DOCKER_IMAGE_ROOT_PASS }}
             USERNAME=${{ env.CONTAINER_USERNAME }}
             GROUP=${{ env.CONTAINER_GROUP }}
+            PROJECT_ROOT=${{ env.CONTAINER_PROJECT_ROOT }}
 
       - name: Set Docker Hub description
         if: steps.run_state.outputs.run_docker_build == 'true'
