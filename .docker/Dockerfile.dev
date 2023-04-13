@@ -28,12 +28,15 @@ ARG PROJECT_ROOT
 #   fi; \
 # done
 
-WORKDIR  $PROJECT_ROOT/$REPO_REL_PATH
-COPY $REPO_REL_PATH $PROJECT_ROOT/$REPO_REL_PATH
-COPY proto $PROJECT_ROOT/proto
-RUN chown -R $CONTAINER_USERNAME:$CONTAINER_GROUP /utkusarioglu-com
+WORKDIR $PROJECT_ROOT
+COPY $REPO_REL_PATH $REPO_REL_PATH
+COPY proto proto
+RUN chown -R $CONTAINER_USERNAME:$CONTAINER_GROUP $PROJECT_ROOT
+
+WORKDIR $PROJECT_ROOT/$REPO_REL_PATH
 RUN yarn
 RUN yarn build
+RUN rm dist/.tsbuildinfo
 
 FROM node:19-slim AS runner
 
@@ -48,12 +51,11 @@ RUN sh -c 'echo "node:$ROOT_PASS" | chpasswd'
 
 RUN apt update
 
-WORKDIR  $PROJECT_ROOT/$REPO_REL_PATH
+WORKDIR $PROJECT_ROOT/$REPO_REL_PATH
 COPY --from=builder $PROJECT_ROOT/$REPO_REL_PATH/dist dist
 COPY --from=builder $PROJECT_ROOT/$REPO_REL_PATH/scripts scripts
 COPY --from=builder $PROJECT_ROOT/$REPO_REL_PATH/package.json package.json
 COPY --from=builder $PROJECT_ROOT/$REPO_REL_PATH/yarn.lock yarn.lock
-RUN rm dist/.tsbuildinfo
 
 WORKDIR  $PROJECT_ROOT/proto
 COPY --from=builder $PROJECT_ROOT/proto/src src
