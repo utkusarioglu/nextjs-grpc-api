@@ -34,7 +34,7 @@ ARG ROOT_PASS
 ARG USERNAME
 ARG GROUP
 ARG REPO_REL_PATH
-ARG PROJECT_ROOT
+ARG PROJECT_ROOT='/utkusarioglu-com/projects/nextjs-grpc'
 
 RUN sh -c 'echo "root:$ROOT_PASS" | chpasswd'
 RUN sh -c 'echo "node:$ROOT_PASS" | chpasswd'
