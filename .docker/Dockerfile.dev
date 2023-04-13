@@ -36,7 +36,7 @@ RUN chown -R $CONTAINER_USERNAME:$CONTAINER_GROUP $PROJECT_ROOT
 WORKDIR $PROJECT_ROOT/$REPO_REL_PATH
 RUN yarn
 RUN yarn build
-RUN rm dist/.tsbuildinfo
+# RUN rm dist/.tsbuildinfo
 
 FROM node:19-slim AS runner
 
