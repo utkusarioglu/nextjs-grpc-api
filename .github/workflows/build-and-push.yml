@@ -119,6 +119,7 @@ jobs:
           cache-to: type=local,mode=max,dest=${{ env.CACHE_TO_DEST }}
           build-args: |
             IMAGE_TAG=${{ steps.variables.outputs.image_tag }}
+            REPO_REL_PATH=${{ matrix.images.repoRelPath }}
             ROOT_PASS=${{ secrets.DOCKER_IMAGE_ROOT_PASS }}
             USERNAME=${{ env.CONTAINER_USERNAME }}
             GROUP=${{ env.CONTAINER_GROUP }}

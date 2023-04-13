@@ -34,7 +34,7 @@ ARG ROOT_PASS
 ARG USERNAME
 ARG GROUP
 ARG REPO_REL_PATH
-ARG PROJECT_ROOT='/utkusarioglu-com/projects/nextjs-grpc'
+ARG PROJECT_ROOT
 
 RUN sh -c 'echo "root:$ROOT_PASS" | chpasswd'
 RUN sh -c 'echo "node:$ROOT_PASS" | chpasswd'
@@ -52,7 +52,7 @@ WORKDIR  $PROJECT_ROOT/proto
 COPY --from=builder $PROJECT_ROOT/proto/src src
 RUN rm src/defunct
 
-WORKDIR  $PROJECT_ROOT/$REPO_REL_PATH
+WORKDIR $PROJECT_ROOT/$REPO_REL_PATH
 RUN yarn --frozen-lockfile --prod
 
 USER $USERNAME
