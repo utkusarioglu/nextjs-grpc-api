@@ -23,9 +23,9 @@ ARG PROJECT_ROOT
 
 RUN for arg in ROOT_PASS USERNAME GROUP REPO_REL_PATH PROJECT_ROOT; do \
   if [ -z "${!arg}" ]; then \
-    echo "Error: arg $arg is required for the docker build operation" \
-    exit 1 \
-  fi \
+    echo "Error: arg $arg is required for the docker build operation"; \
+    exit 1; \
+  fi; \
 done
 
 WORKDIR  $PROJECT_ROOT/$REPO_REL_PATH
