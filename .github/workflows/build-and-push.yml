@@ -56,6 +56,7 @@ jobs:
             ${{ matrix.images.readmeFile }}
             ${{ matrix.images.additionalFilesToWatch }}
             .github/workflows/build-and-push.yml
+            src/**
 
       - name: Declare run state
         id: run_state
