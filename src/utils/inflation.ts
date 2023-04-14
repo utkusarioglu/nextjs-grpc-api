@@ -4,14 +4,16 @@ import * as protoLoader from "@grpc/proto-loader";
 import { readFileSync } from "fs";
 import { PeerCertificate } from "tls";
 
+const { MS_HOST, MS_PORT, MS_GRPC_CLIENT_CERT_FOR_API_SUBPATH, CERTS_PATH } =
+  process.env;
+
 const PROTO_PATH =
   "/utkusarioglu-com/projects/nextjs-grpc/proto/src/inflation/decade-stats.proto";
-const MS = `${process.env.MS_HOST}:${process.env.MS_PORT}`;
+const MS = `${MS_HOST}:${MS_PORT}`;
 
 function readCertPath(filename: string): Buffer {
-  const certsPath = process.env.CERTS_PATH!;
-  const msGrpcClientCertForApi =
-    process.env.MS_GRPC_CLIENT_CERT_FOR_API_SUBPATH!;
+  const certsPath = CERTS_PATH!;
+  const msGrpcClientCertForApi = MS_GRPC_CLIENT_CERT_FOR_API_SUBPATH!;
   return readFileSync(
     path.resolve(certsPath, msGrpcClientCertForApi, filename)
   );
