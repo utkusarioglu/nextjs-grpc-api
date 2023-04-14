@@ -1,28 +1,28 @@
-import path from "path";
 import * as grpc from "@grpc/grpc-js";
 import * as protoLoader from "@grpc/proto-loader";
-import { readFileSync } from "fs";
 import { PeerCertificate } from "tls";
-
-const { MS_HOST, MS_PORT, MS_GRPC_CLIENT_CERT_FOR_API_SUBPATH, CERTS_PATH } =
-  process.env;
 
 const PROTO_PATH =
   "/utkusarioglu-com/projects/nextjs-grpc/proto/src/inflation/decade-stats.proto";
-const MS = `${MS_HOST}:${MS_PORT}`;
+const MS = `${process.env.MS_HOST}:${process.env.MS_PORT}`;
 
-function readCertPath(filename: string): Buffer {
-  const certsPath = CERTS_PATH!;
-  const msGrpcClientCertForApi = MS_GRPC_CLIENT_CERT_FOR_API_SUBPATH!;
-  return readFileSync(
-    path.resolve(certsPath, msGrpcClientCertForApi, filename)
-  );
+interface InflationUtilConstructorParams {
+  caCrt: Buffer;
+  tlsCrt: Buffer;
+  tlsKey: Buffer;
 }
 
 export class InflationUtil {
-  caCrt = readCertPath("ca.crt");
-  tlsCrt = readCertPath("tls.crt");
-  tlsKey = readCertPath("tls.key");
+  caCrt!: Buffer;
+  tlsCrt!: Buffer;
+  tlsKey!: Buffer;
+
+  constructor({ caCrt, tlsCrt, tlsKey }: InflationUtilConstructorParams) {
+    this.caCrt = caCrt;
+    this.tlsCrt = tlsCrt;
+    this.tlsKey = tlsKey;
+  }
+
   inflationProtoDef = protoLoader.loadSync(PROTO_PATH, {
     keepCase: true,
     longs: String,
