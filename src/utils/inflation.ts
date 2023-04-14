@@ -17,11 +17,10 @@ function readCertPath(filename: string): Buffer {
   );
 }
 
-const caCrt = readCertPath("ca.crt");
-const tlsCrt = readCertPath("tls.crt");
-const tlsKey = readCertPath("tls.key");
-
 export class InflationUtil {
+  caCrt = readCertPath("ca.crt");
+  tlsCrt = readCertPath("tls.crt");
+  tlsKey = readCertPath("tls.key");
   inflationProtoDef = protoLoader.loadSync(PROTO_PATH, {
     keepCase: true,
     longs: String,
@@ -30,27 +29,16 @@ export class InflationUtil {
     oneofs: true,
   });
 
-  credentials = grpc.credentials.createSsl(caCrt, tlsKey, tlsCrt, {
-    checkServerIdentity: (hostname: string, cert: PeerCertificate) => {
-      //   console.log(
-      //     [
-      //       "checkServerIdentity",
-      //       "server hostname: ",
-      //       hostname,
-      //       "server cert:",
-      //       cert,
-      //       "ca:",
-      //       caCrt,
-      //       "client key: ",
-      //       tlsKey,
-      //       "client crt:",
-      //       tlsCrt,
-      //     ].join("\n")
-      //   );
-      return undefined;
-      // return () => true;
-    },
-  });
+  credentials = grpc.credentials.createSsl(
+    this.caCrt,
+    this.tlsKey,
+    this.tlsCrt,
+    {
+      checkServerIdentity: (_hostname: string, _cert: PeerCertificate) => {
+        return undefined;
+      },
+    }
+  );
   inflationDefinition = // @ts-ignore
     grpc.loadPackageDefinition(this.inflationProtoDef).ms.nextjs_grpc.Inflation;
 
