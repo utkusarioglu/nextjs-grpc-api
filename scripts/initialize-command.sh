@@ -1,3 +1,3 @@
 #!/bin/bash
 
-docker network create gefyra || true
+# docker network create gefyra || true

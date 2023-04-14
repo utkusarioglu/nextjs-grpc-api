@@ -6,7 +6,7 @@ const LinksView = () => {
   const router = useRouter();
   return (
     <>
-      {["/blog", "/blog/hello"].map((item) => (
+      {["/blog", "/blog/hello", "/inflation"].map((item) => (
         <Button onClick={() => router.push(item)} link key={item}>
           {item}
         </Button>
