@@ -3,8 +3,8 @@ import * as protoLoader from "@grpc/proto-loader";
 import { PeerCertificate } from "tls";
 
 // TODO get rid of this
-const INSECURE = process.env.NODE_ENV === "development";
-// const INSECURE = true;
+// const INSECURE = process.env.NODE_ENV === "development";
+const INSECURE = false;
 
 const PROTO_PATH =
   "/utkusarioglu-com/projects/nextjs-grpc/proto/src/inflation/decade-stats.proto";
