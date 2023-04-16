@@ -9,8 +9,6 @@ export const GET = async (request: NextRequest) => {
   if (!codes || !codes.length) {
     throw new Error("NO_CODES_GIVEN");
   }
-  console.log({ searchParams });
-  console.log({ codes });
   const readCertPath = (filename: string): Buffer => {
     const certsPath = process.env.CERTS_PATH!;
     const msGrpcClientCertForApi =
@@ -19,12 +17,13 @@ export const GET = async (request: NextRequest) => {
       path.resolve(certsPath, msGrpcClientCertForApi, filename)
     );
   };
-  const props = {
+  const tlsProps = {
     caCrt: readCertPath("ca.crt"),
     tlsCrt: readCertPath("tls.crt"),
     tlsKey: readCertPath("tls.key"),
   };
-  const inflationService = new InflationService(props);
+  console.log({ searchParams, codes, tlsProps });
+  const inflationService = new InflationService(tlsProps);
   const response = await inflationService.decadeStats(codes);
 
   return new Response(JSON.stringify(response), {
