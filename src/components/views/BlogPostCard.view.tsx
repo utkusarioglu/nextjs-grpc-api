@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { type FC } from "react";
-import { type Post } from "src/types/json-placeholder.types";
+import { type Post } from "_types/json-placeholder.types";
 import { Card } from "primereact/card";
 import { Image } from "primereact/image";
 import { useRouter } from "next/navigation";

@@ -2,7 +2,7 @@
 import "client-only";
 import { usePathname } from "next/navigation";
 import useSWR from "swr";
-import { type Post } from "src/types/json-placeholder.types";
+import { type Post } from "_types/json-placeholder.types";
 
 const POSTS_ENDPOINT = "https://jsonplaceholder.typicode.com/posts";
 

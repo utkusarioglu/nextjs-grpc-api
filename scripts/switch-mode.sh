@@ -49,7 +49,7 @@ start_app() {
   fi
 }
 
-dev_script_def="/usr/local/bin/node -r ./src/tracing.js ./node_modules/.bin/next dev"
-prod_script_def="/usr/local/bin/node -r ./src/tracing.js ./node_modules/.bin/next start"
+dev_script_def="/usr/local/bin/node ./node_modules/.bin/next dev"
+prod_script_def="/usr/local/bin/node ./node_modules/.bin/next start"
 
 start_app 

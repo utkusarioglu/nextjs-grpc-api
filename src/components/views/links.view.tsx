@@ -7,6 +7,7 @@ const LinksView = () => {
   return (
     <>
       {["/blog", "/blog/hello", "/inflation"].map((item) => (
+        // @ts-expect-error
         <Button onClick={() => router.push(item)} link key={item}>
           {item}
         </Button>

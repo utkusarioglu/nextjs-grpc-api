@@ -25,6 +25,7 @@
       "_hooks/*": ["src/hooks/*"],
       "_utils/*": ["src/utils/*"],
       "_styles/*": ["src/styles/*"],
+      "_services/*": ["src/services/*"],
       "_types/*": ["src/types/*"],
       "__proto/*": ["../proto/src/*"]
     },

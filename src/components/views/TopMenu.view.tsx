@@ -1,4 +1,5 @@
 "use client";
+import { type FC } from "react";
 import { MegaMenu } from "primereact/megamenu";
 import { InputText } from "primereact/inputtext";
 import { useResizeListener } from "primereact/hooks";
@@ -35,9 +36,12 @@ function useViewportSize() {
 
   return eventData;
 }
+interface TopMenuProps {
+  title: string;
+}
 
-const TopMenu = () => {
-  return <MegaMenu start={<span>Blog</span>} end={<SearchView />} />;
+const TopMenu: FC<TopMenuProps> = ({ title }) => {
+  return <MegaMenu start={<span>{title}</span>} end={<SearchView />} />;
 };
 
 const COMPACT_SEARCH_MIN_WIDTH = 800;

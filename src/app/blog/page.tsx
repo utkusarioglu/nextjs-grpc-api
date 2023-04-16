@@ -1,5 +1,5 @@
 "use client";
-import SidebarProvider from "src/components/providers/Sidebar.provider";
+import SidebarProvider from "_providers/Sidebar.provider";
 import BlogPostsView from "_views/BlogPosts.view";
 
 const BlogPage = () => {

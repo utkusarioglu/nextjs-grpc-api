@@ -2,8 +2,6 @@ import React from "react";
 import TopMenu from "_views/TopMenu.view";
 import PrimeReact from "primereact/api";
 
-console.log({ PrimeReact });
-
 export default function BlogLayout({
   children,
 }: {
@@ -20,7 +18,7 @@ export default function BlogLayout({
           borderRadius: 0,
         }}
       >
-        <TopMenu />
+        <TopMenu title="Blog" />
       </div>
       <div>{children}</div>
     </div>
