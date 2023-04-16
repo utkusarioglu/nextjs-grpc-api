@@ -65,4 +65,4 @@ WORKDIR $PROJECT_ROOT/$REPO_REL_PATH
 RUN yarn --frozen-lockfile --prod
 
 USER $USERNAME
-ENTRYPOINT scripts/start.sh
+ENTRYPOINT scripts/entrypoint.sh
