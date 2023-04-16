@@ -56,6 +56,7 @@ COPY --from=builder $PROJECT_ROOT/$REPO_REL_PATH/dist dist
 COPY --from=builder $PROJECT_ROOT/$REPO_REL_PATH/scripts scripts
 COPY --from=builder $PROJECT_ROOT/$REPO_REL_PATH/package.json package.json
 COPY --from=builder $PROJECT_ROOT/$REPO_REL_PATH/yarn.lock yarn.lock
+COPY --from=builder $PROJECT_ROOT/$REPO_REL_PATH/.next .next
 
 WORKDIR  $PROJECT_ROOT/proto
 COPY --from=builder $PROJECT_ROOT/proto/src src
