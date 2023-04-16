@@ -2,8 +2,10 @@ import * as grpc from "@grpc/grpc-js";
 import * as protoLoader from "@grpc/proto-loader";
 import { PeerCertificate } from "tls";
 
+// enabling secure grpc on this end breaks data transmission.
+// when server enables it, it's all fine, but if the client enables it, 
+// connection is never established.
 // TODO get rid of this
-// const INSECURE = process.env.NODE_ENV === "development";
 const insecureGrpc = ["1", "TRUE", "YES"].includes(
   (process.env["INSECURE_GRPC"] || "false").toUpperCase()
 );
