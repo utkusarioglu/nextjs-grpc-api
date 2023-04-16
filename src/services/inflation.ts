@@ -8,6 +8,10 @@ const insecureGrpc = ["1", "TRUE", "YES"].includes(
   (process.env["INSECURE_GRPC"] || "false").toUpperCase()
 );
 
+if (insecureGrpc) {
+  console.log({ msg: "starting insecure grpc", insecureGrpc });
+}
+
 const PROTO_PATH =
   "/utkusarioglu-com/projects/nextjs-grpc/proto/src/inflation/decade-stats.proto";
 const serviceUrl = `${process.env.MS_HOST}:${process.env.MS_PORT}`;

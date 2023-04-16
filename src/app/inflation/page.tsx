@@ -41,7 +41,7 @@ const fetcher = (
 ) => fetch(...args).then((res) => res.json());
 
 function useInflationDecadeStats() {
-  return useSWR<any[]>("/api/inflation?codes=TUR,ENG,FRA", fetcher, {
+  return useSWR<any[]>("/api/inflation?codes=TUR,USA,FRA", fetcher, {
     fallback: [],
   });
 }
