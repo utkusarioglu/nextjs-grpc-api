@@ -13,9 +13,11 @@ export const GET = async (request: NextRequest) => {
     const certsPath = process.env.CERTS_PATH!;
     const msGrpcClientCertForApi =
       process.env.MS_GRPC_CLIENT_CERT_FOR_API_SUBPATH!;
-    return readFileSync(
+    const certPath =  readFileSync(
       path.resolve(certsPath, msGrpcClientCertForApi, filename)
     );
+    console.log({ certPath });
+    return certPath;
   };
   const tlsProps = {
     caCrt: readCertPath("ca.crt"),

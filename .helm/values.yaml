@@ -135,6 +135,7 @@ env:
   API_SERVER_CERT_SUBPATH: api-server-cert
   NEXT_PUBLIC_DOMAIN_NAME: <TF_POPULATED>
   SCHEME: <TF_POPULATED>
+  INSECURE_GRPC: "TRUE"
 
 cloudProvider:
   isLocal: false

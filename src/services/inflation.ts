@@ -4,7 +4,9 @@ import { PeerCertificate } from "tls";
 
 // TODO get rid of this
 // const INSECURE = process.env.NODE_ENV === "development";
-const INSECURE = false;
+const insecureGrpc = ["1", "TRUE", "YES"].includes(
+  (process.env["INSECURE_GRPC"] || "false").toUpperCase()
+);
 
 const PROTO_PATH =
   "/utkusarioglu-com/projects/nextjs-grpc/proto/src/inflation/decade-stats.proto";
@@ -35,26 +37,27 @@ export class InflationService {
     oneofs: true,
   });
 
-  credentials = INSECURE
+  credentials = insecureGrpc
     ? grpc.credentials.createInsecure()
     : grpc.credentials.createSsl(this.caCrt, this.tlsKey, this.tlsCrt, {
         checkServerIdentity: (hostname: string, cert: PeerCertificate) => {
           console.log({
             hostname,
             cert,
-            INSECURE,
+            INSECURE: insecureGrpc,
             caCrt: this.caCrt,
             tlsCrt: this.tlsCrt,
           });
           return undefined;
         },
       });
-  inflationDefinition = // @ts-ignore
-    grpc.loadPackageDefinition(this.inflationProtoDef).ms.nextjs_grpc.Inflation;
+  // @ts-ignore
+  inflationDefinition = grpc.loadPackageDefinition(this.inflationProtoDef).ms.nextjs_grpc.Inflation;
 
   service = new this.inflationDefinition(serviceUrl, this.credentials);
 
   async decadeStats(codes: string[]) {
+    console.log({func: "decadeStats", codes})
     // TODO you need a type here
     return new Promise<any[]>((resolve, reject) => {
       try {
