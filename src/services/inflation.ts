@@ -38,7 +38,14 @@ export class InflationService {
   credentials = INSECURE
     ? grpc.credentials.createInsecure()
     : grpc.credentials.createSsl(this.caCrt, this.tlsKey, this.tlsCrt, {
-        checkServerIdentity: (_hostname: string, _cert: PeerCertificate) => {
+        checkServerIdentity: (hostname: string, cert: PeerCertificate) => {
+          console.log({
+            hostname,
+            cert,
+            INSECURE,
+            caCrt: this.caCrt,
+            tlsCrt: this.tlsCrt,
+          });
           return undefined;
         },
       });

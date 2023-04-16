@@ -8,7 +8,8 @@
   "workspaceFolder": "/utkusarioglu-com/projects/nextjs-grpc/api",
   "settings": {
     "workbench.colorCustomizations": {
-      "activityBar.background": "#770000"
+      "activityBar.background": "#00c02a",
+      "activityBar.foreground": "#000"
     }
   },
   "extensions": [
