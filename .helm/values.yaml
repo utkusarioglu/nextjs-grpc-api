@@ -126,8 +126,9 @@ env:
   MS_PORT: 50051
   OTEL_TRACE_HOST: otel-trace-collector.observability
   OTEL_TRACE_PORT: 4317
-  GRPC_VERBOSITY: DEBUG
+  GRPC_VERBOSITY: INFO
   GRPC_TRACE: all
+  GRPC_CLIENT_INSECURE_CONNECTION: true
   # This should be in config
   REPO_SUBPATH: api
   CERTS_PATH: /.certs
@@ -135,7 +136,6 @@ env:
   API_SERVER_CERT_SUBPATH: api-server-cert
   NEXT_PUBLIC_DOMAIN_NAME: <TF_POPULATED>
   SCHEME: <TF_POPULATED>
-  INSECURE_GRPC: true
 
 cloudProvider:
   isLocal: false

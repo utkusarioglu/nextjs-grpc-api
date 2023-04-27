@@ -11,3 +11,5 @@ module.exports = {
   //   scheme: process.env.SCHEME,
   // },
 };
+
+console.log({ config: process.env });

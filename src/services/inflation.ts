@@ -3,15 +3,20 @@ import * as protoLoader from "@grpc/proto-loader";
 import { PeerCertificate } from "tls";
 
 // enabling secure grpc on this end breaks data transmission.
-// when server enables it, it's all fine, but if the client enables it, 
+// when server enables it, it's all fine, but if the client enables it,
 // connection is never established.
 // TODO get rid of this
 const insecureGrpc = ["1", "TRUE", "YES"].includes(
-  (process.env["INSECURE_GRPC"] || "false").toUpperCase()
+  (!!process.env["GRPC_CLIENT_INSECURE_CONNECTION"]
+    ? process.env["GRPC_CLIENT_INSECURE_CONNECTION"]
+    : "false"
+  ).toUpperCase()
 );
 
 if (insecureGrpc) {
   console.log({ msg: "starting insecure grpc", insecureGrpc });
+} else {
+  console.log({ msg: "starting secure grpc", insecureGrpc });
 }
 
 const PROTO_PATH =
@@ -58,12 +63,13 @@ export class InflationService {
         },
       });
   // @ts-ignore
-  inflationDefinition = grpc.loadPackageDefinition(this.inflationProtoDef).ms.nextjs_grpc.Inflation;
+  inflationDefinition = // @ts-ignore
+    grpc.loadPackageDefinition(this.inflationProtoDef).ms.nextjs_grpc.Inflation;
 
   service = new this.inflationDefinition(serviceUrl, this.credentials);
 
   async decadeStats(codes: string[]) {
-    console.log({func: "decadeStats", codes})
+    console.log({ func: "decadeStats", codes });
     // TODO you need a type here
     return new Promise<any[]>((resolve, reject) => {
       try {

@@ -52,7 +52,11 @@ const InflationPage: FC<InflationPageProps> = () => {
   const { data, error, isLoading } = useInflationDecadeStats();
   if (error) {
     console.log({ error });
-    return <span>error</span>;
+    return (
+      <div style={{ textAlign: "center" }}>
+        <span>error</span>
+      </div>
+    );
   }
   if (isLoading) {
     return <span>Loading...</span>;
