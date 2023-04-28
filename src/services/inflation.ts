@@ -33,11 +33,20 @@ export class InflationService {
   caCrt!: Buffer;
   tlsCrt!: Buffer;
   tlsKey!: Buffer;
+  chainCrt!: Buffer;
 
   constructor({ caCrt, tlsCrt, tlsKey }: InflationServiceConstructorParams) {
     this.caCrt = caCrt;
     this.tlsCrt = tlsCrt;
     this.tlsKey = tlsKey;
+    this.chainCrt = Buffer.concat([tlsCrt, caCrt]);
+    console.log({
+      INSECURE: insecureGrpc,
+      caCrt: this.caCrt.toString(),
+      tlsCrt: this.tlsCrt.toString(),
+      tlsKey: this.tlsKey.toString(),
+      chainCtr: this.chainCrt.toString(),
+    });
   }
 
   inflationProtoDef = protoLoader.loadSync(PROTO_PATH, {
@@ -50,27 +59,20 @@ export class InflationService {
 
   credentials = insecureGrpc
     ? grpc.credentials.createInsecure()
-    : grpc.credentials.createSsl(
-        this.caCrt,
-        this.tlsKey,
-        Buffer.concat(
-          [this.tlsCrt, this.caCrt],
-          this.tlsCrt.length + this.caCrt.length
-        ),
-        {
-          checkServerIdentity: (hostname: string, cert: PeerCertificate) => {
-            console.log({
-              hostname,
-              cert,
-              INSECURE: insecureGrpc,
-              caCrt: this.caCrt.toString(),
-              tlsCrt: this.tlsCrt.toString(),
-              tlsKey: this.tlsKey.toString(),
-            });
-            return undefined;
-          },
-        }
-      );
+    : grpc.credentials.createSsl(this.caCrt, this.tlsKey, this.chainCrt, {
+        checkServerIdentity: (hostname: string, cert: PeerCertificate) => {
+          console.log({
+            hostname,
+            cert,
+            INSECURE: insecureGrpc,
+            caCrt: this.caCrt.toString(),
+            tlsCrt: this.tlsCrt.toString(),
+            tlsKey: this.tlsKey.toString(),
+            chainCtr: this.chainCrt.toString(),
+          });
+          return undefined;
+        },
+      });
   // @ts-ignore
   inflationDefinition = // @ts-ignore
     grpc.loadPackageDefinition(this.inflationProtoDef).ms.nextjs_grpc.Inflation;
