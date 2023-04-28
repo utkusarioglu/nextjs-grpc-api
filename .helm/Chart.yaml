@@ -2,6 +2,6 @@ apiVersion: v2
 name: api
 description: api container for the nextjs-grpc workshop
 type: application
-version: 0.1.102
+version: 0.1.103
 # appVersion: 0.0.10
-appVersion: experiment-feat-next-13-27
+appVersion: experiment-feat-next-13-28

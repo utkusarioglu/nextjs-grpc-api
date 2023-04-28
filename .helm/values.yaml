@@ -66,60 +66,13 @@ autoscaling:
 
 nodeSelector:
   {}
-  # foo: bar
-  # hello: mello
 
 tolerations: []
 
 affinity:
   {}
-  # nodeAffinity:
-  #   preferredDuringSchedulingIgnoredDuringExecution:
-  #     - weight: 1
-  #       preference:
-  #         matchExpressions:
-  #           - key: foo
-  #             operator: Exists
-  #           - key: hello
-  #             operator: Exists
-  # requiredDuringSchedulingIgnoredDuringExecution:
-  #   nodeSelectorTerms:
-  #     - matchExpressions:
-  #         - key: foo
-  #           operator: In
-  #           values:
-  #             - bar
-  # podAffinity:
-  #   requiredDuringSchedulingIgnoredDuringExecution:
-  #     - labelSelector:
-  #         matchExpressions:
-  #           - key: app.kubernetes.io/name
-  #             operator: In
-  #             values:
-  #               - ms
-  #       topologyKey: app.kubernetes.io/managed-by
-
-  # - weight: 1
-  #   podAffinityTerms:
-  #     - labelSelector:
-  #         matchExpressions:
-  #           - key: app.kubernetes.io/name
-  #             operator: In
-  #             values:
-  #               - ms
-  #   topologyKey: app.kubernetes.io/managed-by
-  # podAntiAffinity:
-  #   requiredDuringSchedulingIgnoredDuringExecution:
-  #     - labelSelector:
-  #         matchExpressions:
-  #           - key: app.kubernetes.io/name
-  #             operator: In
-  #             values:
-  #               - ms
-  #       topologyKey: app.kubernetes.io/managed-by
 
 env:
-  # RUN_MODE: development
   RUN_MODE: production
   PROJECT_ROOT_PATH: /utkusarioglu-com/projects/nextjs-grpc
   MS_HOST: ms.ms

@@ -50,18 +50,23 @@ export class InflationService {
 
   credentials = insecureGrpc
     ? grpc.credentials.createInsecure()
-    : grpc.credentials.createSsl(this.caCrt, this.tlsKey, this.tlsCrt, {
-        checkServerIdentity: (hostname: string, cert: PeerCertificate) => {
-          console.log({
-            hostname,
-            cert,
-            INSECURE: insecureGrpc,
-            caCrt: this.caCrt,
-            tlsCrt: this.tlsCrt,
-          });
-          return undefined;
-        },
-      });
+    : grpc.credentials.createSsl(
+        this.caCrt,
+        this.tlsKey,
+        Buffer.concat([this.tlsCrt, this.caCrt]),
+        {
+          checkServerIdentity: (hostname: string, cert: PeerCertificate) => {
+            console.log({
+              hostname,
+              cert,
+              INSECURE: insecureGrpc,
+              caCrt: this.caCrt,
+              tlsCrt: this.tlsCrt,
+            });
+            return undefined;
+          },
+        }
+      );
   // @ts-ignore
   inflationDefinition = // @ts-ignore
     grpc.loadPackageDefinition(this.inflationProtoDef).ms.nextjs_grpc.Inflation;
