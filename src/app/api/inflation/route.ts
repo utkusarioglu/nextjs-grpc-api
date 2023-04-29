@@ -16,7 +16,6 @@ export const GET = async (request: NextRequest) => {
     const certPath = readFileSync(
       path.resolve(certsPath, msGrpcClientCertForApi, filename)
     );
-    console.log({ certPath });
     return certPath;
   };
   const tlsProps = {
@@ -24,7 +23,6 @@ export const GET = async (request: NextRequest) => {
     tlsCrt: readCertPath("tls.crt"),
     tlsKey: readCertPath("tls.key"),
   };
-  console.log({ searchParams, codes, tlsProps });
   const inflationService = new InflationService(tlsProps);
   const response = await inflationService.decadeStats(codes);
 

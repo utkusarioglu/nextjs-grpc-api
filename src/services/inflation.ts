@@ -13,12 +13,6 @@ const insecureGrpc = ["1", "TRUE", "YES"].includes(
   ).toUpperCase()
 );
 
-if (insecureGrpc) {
-  console.log({ msg: "starting insecure grpc", insecureGrpc });
-} else {
-  console.log({ msg: "starting secure grpc", insecureGrpc });
-}
-
 const PROTO_PATH =
   "/utkusarioglu-com/projects/nextjs-grpc/proto/src/inflation/decade-stats.proto";
 const serviceUrl = `${process.env.MS_HOST}:${process.env.MS_PORT}`;
@@ -30,54 +24,45 @@ interface InflationServiceConstructorParams {
 }
 
 export class InflationService {
-  caCrt!: Buffer;
-  tlsCrt!: Buffer;
-  tlsKey!: Buffer;
-  chainCrt!: Buffer;
+  caCrt: Buffer;
+  tlsCrt: Buffer;
+  tlsKey: Buffer;
+  credentials: grpc.ChannelCredentials;
+  // TODO any type
+  inflationDefinition: any;
+  // TODO any type
+  service: any;
+  inflationProtoDef: protoLoader.PackageDefinition;
 
   constructor({ caCrt, tlsCrt, tlsKey }: InflationServiceConstructorParams) {
     this.caCrt = caCrt;
     this.tlsCrt = tlsCrt;
     this.tlsKey = tlsKey;
-    this.chainCrt = Buffer.concat([tlsCrt, caCrt]);
-    console.log({
-      INSECURE: insecureGrpc,
-      caCrt: this.caCrt.toString(),
-      tlsCrt: this.tlsCrt.toString(),
-      tlsKey: this.tlsKey.toString(),
-      chainCtr: this.chainCrt.toString(),
+    this.credentials = insecureGrpc
+      ? grpc.credentials.createInsecure()
+      : grpc.credentials.createSsl(this.caCrt, this.tlsKey, this.tlsCrt, {
+          // checkServerIdentity: (hostname: string, cert: PeerCertificate) => {
+          //   console.log({
+          //     hostname,
+          //     insecureGrpc,
+          //     cert,
+          //   });
+          //   return undefined;
+          // },
+        });
+    this.inflationProtoDef = protoLoader.loadSync(PROTO_PATH, {
+      keepCase: true,
+      longs: String,
+      enums: String,
+      defaults: true,
+      oneofs: true,
     });
+    this.inflationDefinition = grpc.loadPackageDefinition(
+      this.inflationProtoDef
+      // @ts-ignore
+    ).ms.nextjs_grpc.Inflation;
+    this.service = new this.inflationDefinition(serviceUrl, this.credentials);
   }
-
-  inflationProtoDef = protoLoader.loadSync(PROTO_PATH, {
-    keepCase: true,
-    longs: String,
-    enums: String,
-    defaults: true,
-    oneofs: true,
-  });
-
-  credentials = insecureGrpc
-    ? grpc.credentials.createInsecure()
-    : grpc.credentials.createSsl(this.caCrt, this.tlsKey, this.chainCrt, {
-        checkServerIdentity: (hostname: string, cert: PeerCertificate) => {
-          console.log({
-            hostname,
-            cert,
-            INSECURE: insecureGrpc,
-            caCrt: this.caCrt.toString(),
-            tlsCrt: this.tlsCrt.toString(),
-            tlsKey: this.tlsKey.toString(),
-            chainCtr: this.chainCrt.toString(),
-          });
-          return undefined;
-        },
-      });
-  // @ts-ignore
-  inflationDefinition = // @ts-ignore
-    grpc.loadPackageDefinition(this.inflationProtoDef).ms.nextjs_grpc.Inflation;
-
-  service = new this.inflationDefinition(serviceUrl, this.credentials);
 
   async decadeStats(codes: string[]) {
     console.log({ func: "decadeStats", codes });
