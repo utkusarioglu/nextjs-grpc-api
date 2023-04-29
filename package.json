@@ -7,10 +7,10 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "dev": "yarn next dev",
-    "dev:no-telemetry": "ENABLE_INSTRUMENTATION=FALSE yarn next dev",
+    "dev": "scripts/dev.sh",
+    "dev:no-telemetry": "scripts/dev-no-telemetry.sh",
     "build": "yarn next build",
-    "start": "NODE_ENV=production yarn next start",
+    "start": "scripts/start.sh",
     "debug": "this is broken now => node --inspect -r ./src/tracing.js ./node_modules/.bin/next dev"
   },
   "dependencies": {

@@ -39,7 +39,7 @@ export class InflationService {
     this.caCrt = caCrt;
     this.tlsCrt = tlsCrt;
     this.tlsKey = tlsKey;
-    this.chainCrt = Buffer.concat([caCrt, tlsCrt]);
+    this.chainCrt = Buffer.concat([tlsCrt, caCrt]);
     console.log({
       INSECURE: insecureGrpc,
       caCrt: this.caCrt.toString(),

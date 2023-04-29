@@ -1,7 +1,9 @@
 node_modules
 *.log
-*.env
+*.env.local
+*.env.ci
 /*tsbuildinfo*
+
 .next
 .certs
 /build
