@@ -10,9 +10,9 @@ export const GET = async (request: NextRequest) => {
     throw new Error("NO_CODES_GIVEN");
   }
   const readCertPath = (filename: string): Buffer => {
-    const certsPath = process.env.CERTS_PATH!;
+    const certsPath = process.env.CERTIFICATES_ABSPATH!;
     const msGrpcClientCertForApi =
-      process.env.MS_GRPC_CLIENT_CERT_FOR_API_SUBPATH!;
+      process.env.MS_GRPC_CLIENT_CERT_FOR_API_RELPATH!;
     const certPath = readFileSync(
       path.resolve(certsPath, msGrpcClientCertForApi, filename)
     );

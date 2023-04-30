@@ -27,9 +27,9 @@ podAnnotations:
   prometheus.io/port: "9464"
 
 podSecurityContext:
-  runAsUser: 1000
-  runAsGroup: 1000
-  fsGroup: 1000
+  runAsUser: 10021
+  runAsGroup: 10021
+  fsGroup: 10021
   fsGroupChangePolicy: "OnRootMismatch" 
 
 securityContext:
@@ -38,7 +38,7 @@ securityContext:
   #   - ALL
   # readOnlyRootFilesystem: true
   runAsNonRoot: true
-  runAsUser: 1000
+  runAsUser: 10021
 
 service:
   type: <TF_POPULATED>
@@ -74,19 +74,28 @@ affinity:
 
 env:
   RUN_MODE: production
-  PROJECT_ROOT_PATH: /utkusarioglu-com/projects/nextjs-grpc
+
+  PROJECT_ROOT_ABSPATH: /utkusarioglu-com/projects/nextjs-grpc
+  REPO_RELPATH: api
+  REPO_PROTOS_RELPATH: protos/src
+
   MS_HOST: ms.ms
   MS_PORT: 50051
+
   OTEL_TRACE_HOST: otel-trace-collector.observability
   OTEL_TRACE_PORT: 4317
+
   GRPC_VERBOSITY: INFO
   GRPC_TRACE: all
-  GRPC_CLIENT_INSECURE_CONNECTION: false
+  GRPC_CLIENT_TLS_ENABLED: true
+
   # This should be in config
-  REPO_SUBPATH: api
-  CERTS_PATH: /.certs
-  MS_GRPC_CLIENT_CERT_FOR_API_SUBPATH: ms-grpc-client-cert-for-api
-  API_SERVER_CERT_SUBPATH: api-server-cert
+  CERTIFICATES_ABSPATH: /.certificates
+  # CREDENTIALS_ABSPATH: /.certs # This isn't used 
+
+  MS_GRPC_CLIENT_CERT_FOR_API_RELPATH: ms-grpc-client-cert-for-api
+  API_SERVER_CERT_RELPATH: api-server-cert
+
   NEXT_PUBLIC_DOMAIN_NAME: <TF_POPULATED>
   SCHEME: <TF_POPULATED>
 

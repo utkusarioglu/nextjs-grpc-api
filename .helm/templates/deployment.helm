@@ -59,14 +59,14 @@ spec:
             {{ with .Values.env -}}
             {{- if eq .RUN_MODE "development" -}}
             - name: source-code
-              mountPath: {{ .PROJECT_ROOT_PATH }}
+              mountPath: {{ .PROJECT_ROOT_ABSPATH }}
             {{- end }}
             - name: {{ $.Values.certSecretNames.msGrpcClient }}
               mountPath: {{ 
                 include "api.singleCertPath" (
                   dict 
                     "global" $ 
-                    "subpath" .MS_GRPC_CLIENT_CERT_FOR_API_SUBPATH
+                    "relpath" .MS_GRPC_CLIENT_CERT_FOR_API_RELPATH
                 ) | quote 
               }}
               readOnly: true
@@ -75,7 +75,7 @@ spec:
                 include "api.singleCertPath" (
                   dict 
                     "global" $ 
-                    "subpath" .API_SERVER_CERT_SUBPATH
+                    "relpath" .API_SERVER_CERT_RELPATH
                 ) | quote 
               }}
               readOnly: true

@@ -1,21 +1,23 @@
 import * as grpc from "@grpc/grpc-js";
 import * as protoLoader from "@grpc/proto-loader";
-import { PeerCertificate } from "tls";
 
 // enabling secure grpc on this end breaks data transmission.
 // when server enables it, it's all fine, but if the client enables it,
 // connection is never established.
 // TODO get rid of this
-const insecureGrpc = ["1", "TRUE", "YES"].includes(
-  (!!process.env["GRPC_CLIENT_INSECURE_CONNECTION"]
-    ? process.env["GRPC_CLIENT_INSECURE_CONNECTION"]
+const grpcTlsEnabled = ["1", "TRUE", "YES"].includes(
+  (!!process.env["GRPC_CLIENT_TLS_ENABLED"]
+    ? process.env["GRPC_CLIENT_TLS_ENABLED"]
     : "false"
   ).toUpperCase()
 );
 
-const PROTO_PATH =
-  "/utkusarioglu-com/projects/nextjs-grpc/proto/src/inflation/decade-stats.proto";
-const serviceUrl = `${process.env.MS_HOST}:${process.env.MS_PORT}`;
+const protoPath = [
+  process.env.PROJECT_ROOT_ABSPATH,
+  process.env.REPO_PROTOS_RELPATH,
+  "inflation/decade-stats.proto",
+].join("/");
+const serviceUrl = [process.env.MS_HOST, process.env.MS_PORT].join(":");
 
 interface InflationServiceConstructorParams {
   caCrt: Buffer;
@@ -38,9 +40,8 @@ export class InflationService {
     this.caCrt = caCrt;
     this.tlsCrt = tlsCrt;
     this.tlsKey = tlsKey;
-    this.credentials = insecureGrpc
-      ? grpc.credentials.createInsecure()
-      : grpc.credentials.createSsl(this.caCrt, this.tlsKey, this.tlsCrt, {
+    this.credentials = grpcTlsEnabled
+      ? grpc.credentials.createSsl(this.caCrt, this.tlsKey, this.tlsCrt, {
           // checkServerIdentity: (hostname: string, cert: PeerCertificate) => {
           //   console.log({
           //     hostname,
@@ -49,8 +50,9 @@ export class InflationService {
           //   });
           //   return undefined;
           // },
-        });
-    this.inflationProtoDef = protoLoader.loadSync(PROTO_PATH, {
+        })
+      : grpc.credentials.createInsecure();
+    this.inflationProtoDef = protoLoader.loadSync(protoPath, {
       keepCase: true,
       longs: String,
       enums: String,

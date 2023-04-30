@@ -92,19 +92,19 @@ hello: yes
 Produce the absolute path of the repo
 */}}
 {{- define "api.repoPath" -}}
-{{- printf "%s/%s" .Values.env.PROJECT_ROOT_PATH .Values.env.REPO_SUBPATH -}}
+{{- printf "%s/%s" .Values.env.PROJECT_ROOT_ABSPATH .Values.env.REPO_RELPATH -}}
 {{- end }}
 
 # {{/* 
 # Produce the absolute path for the repo certificates
 # */}}
 # {{- define "api.certsPath" -}}
-# {{ printf "%s/%s" (include "api.repoPath" .) .Values.env.CERTS_SUBPATH }}
+# {{ printf "%s/%s" (include "api.repoPath" .) .Values.env.CERTS_RELPATH }}
 # {{- end }}
 
 {{/* 
 Produce path for a single certificate
 */}}
 {{- define "api.singleCertPath" -}}
-{{ printf "%s/%s" .global.Values.env.CERTS_PATH .subpath }}
+{{ printf "%s/%s" .global.Values.env.CERTIFICATES_ABSPATH .relpath }}
 {{- end }}

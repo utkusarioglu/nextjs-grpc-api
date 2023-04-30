@@ -2,7 +2,7 @@ import React from "react";
 import TopMenu from "_views/TopMenu.view";
 import PrimeReact from "primereact/api";
 
-export default function BlogLayout({
+export default function InflationLayout({
   children,
 }: {
   children: React.ReactNode;
