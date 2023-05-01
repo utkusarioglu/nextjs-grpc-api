@@ -77,7 +77,7 @@ env:
 
   PROJECT_ROOT_ABSPATH: /utkusarioglu-com/projects/nextjs-grpc
   REPO_RELPATH: api
-  REPO_PROTOS_RELPATH: protos/src
+  REPO_PROTOS_RELPATH: proto/src
 
   MS_HOST: ms.ms
   MS_PORT: 50051
