@@ -28,8 +28,12 @@ export function usePosts(): UsePostsReturn {
             posts,
             timestamp: Date.now(),
           });
-        const timeout = setTimeout(assigner, TIMEOUT_LATENCY);
-        return () => clearTimeout(timeout);
+        if (process.env.NODE_ENV === "development") {
+          const timeout = setTimeout(assigner, TIMEOUT_LATENCY);
+          return () => clearTimeout(timeout);
+        } else {
+          assigner();
+        }
       });
   }, []);
 
